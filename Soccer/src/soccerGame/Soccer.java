@@ -1,23 +1,39 @@
 package soccerGame;
 
+import java.awt.*;
+import javax.swing.*;
+
 public class Soccer {
-	Field field;		// Ãà±¸ °ÔÀÓÀÇ °æ±âÀå
-	Ball ball;			// °æ±â¿¡ »ç¿ëµÇ´Â °ø
-	Player p, q, r;		// ÇÃ·¹ÀÌ¾î
-	boolean timeout, goal;		// °¢°¢ term°ú °ñÀÎ ¿©ºÎ ÆÇ´Ü
-	int clock;					// termÀ» Ã¼Å©ÇÏ´Â º¯¼ö
-	int leftScore = 0, rightScore = 0;		// ¿ŞÂÊ, ¿À¸¥ÂÊ ÆÀÀÇ °ñ ¼ö
+	JField JField;		// ì¶•êµ¬ ê²Œì„ì˜ ê²½ê¸°ì¥
+	Ball ball;			// ê²½ê¸°ì— ì‚¬ìš©ë˜ëŠ” ê³µ
+	Player p, q, r;		// í”Œë ˆì´ì–´
+	boolean timeout, goal;		// ê°ê° termê³¼ ê³¨ì¸ ì—¬ë¶€ íŒë‹¨
+	int time;					// termì„ ì²´í¬í•˜ëŠ” ë³€ìˆ˜
+	int clock;
+	int leftScore = 0, rightScore = 0;		// ì™¼ìª½, ì˜¤ë¥¸ìª½ íŒ€ì˜ ê³¨ ìˆ˜
 	public static void main(String a[]) 
 	{
-		new Soccer();			// ÇÑ °æ±â ÁÖÃÖ
+		new Soccer();			// í•œ ê²½ê¸° ì£¼ìµœ
 	}
 	
 	Soccer()
 	{
-		field = new Field(128, 96);		// °¡·Î 128, ¼¼·Î 96ÀÎ ÇÊµå »ı¼º
-		ball = new Ball(field);			// ÇÊµå Áß¾Ó¿¡ °ø »ı¼º
-		p = new Player("¼Õ", "P", field, -50, 10);	// (-50, 10)¿¡ ¼±¼ö »ı¼º
-		q = new Player("±â", "Q", field, 50, -10);	// (50, 10)¿¡ ¼±¼ö »ı¼º
+		JField = new JField(320, 240, this);		// ê°€ë¡œ 128, ì„¸ë¡œ 96ì¸ í•„ë“œ ìƒì„±
+		ball = new Ball(JField);			// í•„ë“œ ì¤‘ì•™ì— ê³µ ìƒì„±
+		p = new Player("ì†", "P", JField, -50, 10);	// (-50, 10)ì— ì„ ìˆ˜ ìƒì„±
+		q = new Player("ê¸°", "Q", JField, 50, -10);	// (50, 10)ì— ì„ ìˆ˜ ìƒì„±
+		
+		JPanel pan = new JPanel(null);
+		pan.setBackground(Color.WHITE);
+		pan.add(JField);
+		JField.setLocation(20, 10);
+		
+		JFrame f = new JFrame("í•µì‹¬J: Soccer Graphical");
+		f.getContentPane().add(pan);
+		f.setSize(320+56, 240+60);
+		f.setVisible(true);
+		f.setResizable(false);
+		
 		Start();
 	}
 	void Start() 
@@ -32,35 +48,35 @@ public class Soccer {
 	}
 	void Run() 
 	{
-		int clock = 0;
 		while(!timeout) 
 		{
-			clock++;			// 1term¾¿ Áõ°¡
-			System.out.println("["+clock+"]");
-			int dist = p.Move(ball);		// p¼±¼ö¿Í °øÀÇ °Å¸® ±¸ÇÔ
-			int distq = q.Move(ball);		// q¼±¼ö¿Í °øÀÇ °Å¸® ±¸ÇÔ
-			r = p;							// °ø°ú °¡±î¿î ¼±¼ö(r)¸¦ default·Î p·Î ¼³Á¤
+			clock++;			// 1termì”© ì¦ê°€
+			System.out.println("["+time+"]");
+			int dist = p.Move(ball);		// pì„ ìˆ˜ì™€ ê³µì˜ ê±°ë¦¬ êµ¬í•¨
+			int distq = q.Move(ball);		// qì„ ìˆ˜ì™€ ê³µì˜ ê±°ë¦¬ êµ¬í•¨
+			r = p;							// ê³µê³¼ ê°€ê¹Œìš´ ì„ ìˆ˜(r)ë¥¼ defaultë¡œ pë¡œ ì„¤ì •
 			if(distq < dist) 
 			{ 
 				r = q; dist = distq;
 			}
 			if(dist < 5) 
-			{			// °ø°úÀÇ °Å¸®°¡ 5 ÀÌÇÏÀÌ¸é
-				r.Kick(ball);		// °øÀ» Âù´Ù
+			{			// ê³µê³¼ì˜ ê±°ë¦¬ê°€ 5 ì´í•˜ì´ë©´
+				r.Kick(ball);		// ê³µì„ ì°¬ë‹¤
 				System.out.print(" -> " + r.name + "kicks -> ");
 			}
-			goal = ball.Move();		// °øÀÌ ¿òÁ÷ÀÌ¸é¼­ °ñÀÎ ¿©ºÎ ÆÇ´Ü
+			goal = ball.Move();		// ê³µì´ ì›€ì§ì´ë©´ì„œ ê³¨ì¸ ì—¬ë¶€ íŒë‹¨
 			ShowScore();
-			Show();					// °ÔÀÓ Ãâ·Â
+			//Show();					// ê²Œì„ ì¶œë ¥
+			JField.repaint();
 			if(goal) 
 			{ 
-				// ¾îµğ·Î µé¾î°¬´À³Ä¿¡ µû¶ó Á¡¼ö ºÎ¿©
-				if(ball.GetX() > field.GetRight()-1)
+				// ì–´ë””ë¡œ ë“¤ì–´ê°”ëŠëƒì— ë”°ë¼ ì ìˆ˜ ë¶€ì—¬
+				if(ball.GetX() > JField.GetRight()-1)
 					leftScore++;
-				else if(ball.GetX() < field.GetLeft()+1)
+				else if(ball.GetX() < JField.GetLeft()+1)
 					rightScore++;
-				System.out.println("*°ñ ÀÎ*");
-				// °ø ¹× ¼±¼öÀÇ »óÅÂ¸¦ ÃÊ±âÈ­½ÃÅ´
+				System.out.println("*ê³¨ ì¸*");
+				// ê³µ ë° ì„ ìˆ˜ì˜ ìƒíƒœë¥¼ ì´ˆê¸°í™”ì‹œí‚´
 				ball.InitBall();
 				p.InitPlayerState(-50, 10);
 				q.InitPlayerState(50, -10);
@@ -68,17 +84,17 @@ public class Soccer {
 			
 			try 
 			{
-				Thread.sleep(300);		// 0.3ÃÊÀÇ °£°İÀ¸·Î °ÔÀÓ ÁøÇà
+				Thread.sleep(100);		// 0.3ì´ˆì˜ ê°„ê²©ìœ¼ë¡œ ê²Œì„ ì§„í–‰
 			} catch(Exception e) {}
 			
-			if(clock> 45)
-				Stop();				// 45ÅÒÀ» ³Ñ±â¸é °ÔÀÓ Á¾·á
+			if(clock> 90)
+				Stop();				// 45í…€ì„ ë„˜ê¸°ë©´ ê²Œì„ ì¢…ë£Œ
 		}
 		System.out.println(" * TIME OUT * ");
 	}
 	void Show() 
-	{							/* member variables: {field, b, p, q} */
-		int dH = 10, dW = 3;	/* ¿îµ¿Àå cell dimension: dHxdW */
+	{							/* member variables: {JField, b, p, q} */
+		int dH = 10, dW = 3;	/* ìš´ë™ì¥ cell dimension: dHxdW */
 		int bx = ball.GetX() / dW;
 		int by = ball.GetY() / dH;
 		int px = p.GetX() / dW;
@@ -86,11 +102,11 @@ public class Soccer {
 		int qy = q.GetY() / dH;
 		int qx = q.GetX() / dW;
 
-		Hline(field.GetRight()/dW - field.GetLeft()/dW + 1);
-		for(int r = field.GetTop()/dH; r <= field.GetBottom()/dH; r ++) 
+		Hline(JField.GetRight()/dW - JField.GetLeft()/dW + 1);
+		for(int r = JField.GetTop()/dH; r <= JField.GetBottom()/dH; r ++) 
 		{
 		    Tpr("|");
-		    for(int i = field.GetLeft()/dW; i<= field.GetRight()/dW; i ++) 
+		    for(int i = JField.GetLeft()/dW; i<= JField.GetRight()/dW; i ++) 
 		    {
 				if (r == by && i == bx) 
 				{
@@ -127,7 +143,7 @@ public class Soccer {
 		    }
 		    Tprl("|"+r);
 		}
-		Hline(field.GetRight()/dW - field.GetLeft()/dW + 1);
+		Hline(JField.GetRight()/dW - JField.GetLeft()/dW + 1);
 	}
 	void Hline(int n) 
 	{
@@ -145,18 +161,25 @@ public class Soccer {
 	}
 	void ShowScore() 
 	{
-		System.out.println("Á¡¼ö( " + leftScore + " : " + rightScore + "). ");
+		System.out.println("ì ìˆ˜( " + leftScore + " : " + rightScore + "). ");
 	}
 }
 
-class Field {
-	int x0, x1, y0, y1, w, h;		// °¢°¢ ¿ŞÂÊ, ¿À¸¥ÂÊ, À§ÂÊ, ¾Æ·¡ÂÊ, °¡·Î, ¼¼·Î ±æÀÌ
-	Field(int wide, int high)
+class JField extends JPanel {
+	private int x0, x1, y0, y1, w, h;		// ê°ê° ì™¼ìª½, ì˜¤ë¥¸ìª½, ìœ„ìª½, ì•„ë˜ìª½, ê°€ë¡œ, ì„¸ë¡œ ê¸¸ì´
+	Soccer match;
+	JField(int wide, int high, Soccer match)
 	{
 		w = wide; h = high;
+		this.match = match;
+		
+		setSize(w, h);
+		setBackground(Color.green);
+		
 		x1 = w/2; y1 = h/2;
 		x0 = -x1; y0 = -y1;
 	}
+	
 	int GetLeft() 
 	{
 		return x0;
@@ -173,28 +196,61 @@ class Field {
 	{
 		return y1;
 	}
+	int getCx() 
+	{
+		return x1;
+	}
+	int getCy() 
+	{
+		return y1;
+	}
+	public void paint(Graphics g)
+	{
+		super.paint(g);
+		g.setColor(Color.white);
+		this.drawClock(g);
+		this.drawScore(g);
+		g.drawRect(0, 0, w, h);
+		g.drawLine(getCx(), getCy()+y0, getCx(), getCy()+y1);
+		g.drawOval(getCx() -40, getCy() - 40, 80, 80);
+		
+		match.ball.draw(g);
+		g.setColor(Color.red); match.p.draw(g);
+		g.setColor(Color.blue); match.q.draw(g);
+	}
+	public void drawClock(Graphics g) {
+		int r = 10, x = w-r-10,  y = r+10;
+		double a = Math.PI/180 * (-90 + match.clock*(360/90));
+		g.drawOval(x - r,  y - r,  2 * r,  2 * r);
+		g.drawLine(x, y, (int)(x + r*Math.cos(a)), (int)(y + r*Math.sin(a)));
+		
+	}
+	void drawScore(Graphics g) {
+		g.drawBytes(Integer.toBinaryString(match.leftScore).getBytes(), 0, 1, this.getCx()-15, this.getCy() - y1+15);
+		g.drawBytes(Integer.toBinaryString(match.rightScore).getBytes(), 0, 1, this.getCx()+15, this.getCy() - y1+15);
+	}
 }
 
 class Ball {
 	private int x, y, diameter;
-	private double vx, vy;		// °¡¼Óµµ
-	Field field;
-	Ball(Field f)
+	private double vx, vy;		// ê°€ì†ë„
+	JField JField;
+	Ball(JField f)
 	{
-		x = 0; vx= 0; y = 0; vy = 0; this.field = f;
+		x = 0; vx= 0; y = 0; vy = 0; this.JField = f;
 	}
 	void Fly(double kx, double ky) 
 	{
-		vx += kx; vy += ky;		// ¼±¼ö°¡ °øÀ» Âù Á¤µµ ¸¸Å­ °¡¼Óµµ Áõ°¡
+		vx += kx; vy += ky;		// ì„ ìˆ˜ê°€ ê³µì„ ì°¬ ì •ë„ ë§Œí¼ ê°€ì†ë„ ì¦ê°€
 	}
 	boolean Move() 
 	{
-		x = x + (int)vx; y = y + (int)vy;		// °¡¼Óµµ¸¸Å­ ´õÇÔ
-		System.out.print("°ø(" + x + ", " + y + ") ");
-		vx = vx * 0.8; vy = vy * 0.8;		// °¡¼Óµµ ÁÙ¾îµë
-		CheckBounds();						// ¹Û¿¡ ³ª°£Áö ¿©ºÎ
-		// ¿ŞÂÊ ¹× ¿À¸¥ÂÊ º®¿¡ ´êÀ¸¸é °ñÀÎ ÀÎÁ¤
-		return(x > field.GetRight()-1 || x < field.GetLeft()+1);
+		x = x + (int)vx; y = y + (int)vy;		// ê°€ì†ë„ë§Œí¼ ë”í•¨
+		System.out.print("ê³µ(" + x + ", " + y + ") ");
+		vx = vx * 0.8; vy = vy * 0.8;		// ê°€ì†ë„ ì¤„ì–´ë“¬
+		CheckBounds();						// ë°–ì— ë‚˜ê°„ì§€ ì—¬ë¶€
+		// ì™¼ìª½ ë° ì˜¤ë¥¸ìª½ ë²½ì— ë‹¿ìœ¼ë©´ ê³¨ì¸ ì¸ì •
+		return(x > JField.GetRight()-1 || x < JField.GetLeft()+1);
 	}
 	int GetX() 
 	{
@@ -204,41 +260,54 @@ class Ball {
 	{
 		return y;
 	}
-	// °ø »óÅÂ ÃÊ±âÈ­
+	// ê³µ ìƒíƒœ ì´ˆê¸°í™”
 	void InitBall() 
 	{
 		x = 0; y = 0;
 		vx= 0; vy = 0;
 	}
-	// À§, ¾Æ·¡´Â ¹ÛÀ¸·Î ³ª°¡¸é Æ¨±ä´Ù
+	// ìœ„, ì•„ë˜ëŠ” ë°–ìœ¼ë¡œ ë‚˜ê°€ë©´ íŠ•ê¸´ë‹¤
 	void CheckBounds() 
 	{
-		//if(x < field.GetLeft()) { vx = -vx; x = 2*field.GetLeft() - x;}
-		//if(x > field.GetRight()) { vx = -vx; x = 2*field.GetRight() - x;}
-		if(y > field.GetBottom()) { vy = -vy; y = 2*field.GetBottom() - y;}
-		if(y < field.GetTop()) {vy = -vy; y = 2*field.GetTop() - y;}
+		//if(x < JField.GetLeft()) { vx = -vx; x = 2*JField.GetLeft() - x;}
+		//if(x > JField.GetRight()) { vx = -vx; x = 2*JField.GetRight() - x;}
+		if(y > JField.GetBottom()) { vy = -vy; y = 2*JField.GetBottom() - y;}
+		if(y < JField.GetTop()) {vy = -vy; y = 2*JField.GetTop() - y;}
+	}
+	void draw(Graphics g) {
+		int radius = 5;
+		g.setColor(Color.black);
+		g.fillOval(JField.getCx() + x - radius, JField.getCy() + y - radius, radius*2, radius * 2);
 	}
 }
 
 
 class Player {
-	int x, y;		// ÇÃ·¹ÀÌ¾î ÁÂÇ¥
-	double dx, dy, speed;		// °¡·ÎÃà, ¼¼·ÎÃà °¡¼Óµµ ±×¸®°í ½ºÇÇµå
-	Field field;
-	String name, team;			// ¼±¼ö¸í, ÆÀ¸í
+	int x, y;		// í”Œë ˆì´ì–´ ì¢Œí‘œ
+	double dx, dy, speed;		// ê°€ë¡œì¶•, ì„¸ë¡œì¶• ê°€ì†ë„ ê·¸ë¦¬ê³  ìŠ¤í”¼ë“œ
+	JField JField;
+	String name, team;			// ì„ ìˆ˜ëª…, íŒ€ëª…
 	
-	Player(String ÀÌ¸§, String ÆÀ, Field f, int x0, int y0)
+	Player(String ì´ë¦„, String íŒ€, JField f, int x0, int y0)
 	{
-		name = ÀÌ¸§; team = ÆÀ; this.field = f; x = x0; y = y0;
+		name = ì´ë¦„; team = íŒ€; this.JField = f; x = x0; y = y0;
 	}
 	
 	void Kick(Ball b) 
 	{
-		// °¡¼Óµµ¿Í ³­¼ö°ªÀ» ÀûÀıÈ÷ ´õÇÑ °ªÀÌ °øÀÇ °¡¼Óµµ
+		// ê°€ì†ë„ì™€ ë‚œìˆ˜ê°’ì„ ì ì ˆíˆ ë”í•œ ê°’ì´ ê³µì˜ ê°€ì†ë„
 		double kx = dx*2 + RandM(5) -3;
 		double ky = dy*2 + RandM(4) -2;
-		b.Fly(kx, ky);		// °ø¿¡°Ô °¡¼Óµµ ºÎ¿©
-		speed = speed/2;	// Â÷°í ³ª¸é ¼±¼ö Èûµé¾î¼­ ¼Óµµ ÁØ´Ù
+		if(b.GetX() < 0 && this.team.equals("P")) {
+			kx = -2 * kx;
+			ky = -2 * ky;
+		}
+		else if(b.GetX() > 0 && this.team.equals("Q")) {
+			kx = -kx;
+			ky = -ky;
+		}
+		b.Fly(kx, ky);		// ê³µì—ê²Œ ê°€ì†ë„ ë¶€ì—¬
+		speed = speed/2;	// ì°¨ê³  ë‚˜ë©´ ì„ ìˆ˜ í˜ë“¤ì–´ì„œ ì†ë„ ì¤€ë‹¤
 	}
 	double RandM(int M) 
 	{
@@ -246,13 +315,13 @@ class Player {
 	}
 	int Move(Ball b) 
 	{
-		Dash(b);		// °øÀ» ÇâÇØ ¶Ú´Ù
-		x = x + (int)dx; y = y + (int)dy;	// °¡¼Óµµ ´õÇØ¼­ À§Ä¡ ÀÌµ¿
-		int dist = (int) Distance(b);		// °ø°úÀÇ °Å¸® dist¿¡ ÀúÀå
+		Dash(b);		// ê³µì„ í–¥í•´ ë›´ë‹¤
+		x = x + (int)dx; y = y + (int)dy;	// ê°€ì†ë„ ë”í•´ì„œ ìœ„ì¹˜ ì´ë™
+		int dist = (int) Distance(b);		// ê³µê³¼ì˜ ê±°ë¦¬ distì— ì €ì¥
 		System.out.print(name +" " + dist + " ");
 		return dist;
 	}
-	// ¼±¼ö¿Í °ø »çÀÌÀÇ °Å¸®
+	// ì„ ìˆ˜ì™€ ê³µ ì‚¬ì´ì˜ ê±°ë¦¬
 	double Distance(Ball b) 
 	{
 		double x2x = x - b.GetX();
@@ -263,7 +332,7 @@ class Player {
 	{
 		double dist = Distance(b) +1;
 		speed = speed*0.8 + RandM(4);
-		// ¹æÇâ º¤ÅÍ ±¸ÇÏ°í ½ºÇÇµå Å©±â ¸¸Å­ °öÇÑ´Ù.
+		// ë°©í–¥ ë²¡í„° êµ¬í•˜ê³  ìŠ¤í”¼ë“œ í¬ê¸° ë§Œí¼ ê³±í•œë‹¤.
 		dx = (b.GetX() -x )/ dist * speed;
 		dy = (b.GetY() - y)/ dist * speed;
 	}
@@ -275,17 +344,13 @@ class Player {
 	{
 		return y;
 	}
-	// ¼±¼ö »óÅÂ ÃÊ±âÈ­
+	// ì„ ìˆ˜ ìƒíƒœ ì´ˆê¸°í™”
 	void InitPlayerState(int X, int Y) 
 	{
 		x = X; y = Y;
 		dx = 0; dy = 0;
 	}
+	public void draw(Graphics g) {
+		g.drawRect(JField.getCx() + x -5, JField.getCy() + y-20, 10, 20);
+	}
 }
-
-
-
-
-
-
-
