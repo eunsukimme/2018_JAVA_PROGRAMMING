@@ -1,6 +1,8 @@
 package soccerGame;
 
 import java.awt.*;
+import java.awt.event.*;
+
 import javax.swing.*;
 
 public class Soccer {
@@ -18,7 +20,7 @@ public class Soccer {
 	
 	Soccer()
 	{
-		JField = new JField(320, 240, this);		// 가로 128, 세로 96인 필드 생성
+		JField = new JField(2*320, 2*240, this);		// 가로 128, 세로 96인 필드 생성
 		ball = new Ball(JField);			// 필드 중앙에 공 생성
 		p = new Player("손", "P", JField, -50, 10);	// (-50, 10)에 선수 생성
 		q = new Player("기", "Q", JField, 50, -10);	// (50, 10)에 선수 생성
@@ -30,7 +32,7 @@ public class Soccer {
 		
 		JFrame f = new JFrame("핵심J: Soccer Graphical");
 		f.getContentPane().add(pan);
-		f.setSize(320+56, 240+60);
+		f.setSize(2*(320+56), 2*(240+60));
 		f.setVisible(true);
 		f.setResizable(false);
 		
@@ -51,7 +53,7 @@ public class Soccer {
 		while(!timeout) 
 		{
 			clock++;			// 1term씩 증가
-			System.out.println("["+time+"]");
+			System.out.println("["+clock+"]");
 			int dist = p.Move(ball);		// p선수와 공의 거리 구함
 			int distq = q.Move(ball);		// q선수와 공의 거리 구함
 			r = p;							// 공과 가까운 선수(r)를 default로 p로 설정
@@ -84,10 +86,10 @@ public class Soccer {
 			
 			try 
 			{
-				Thread.sleep(100);		// 0.3초의 간격으로 게임 진행
+				Thread.sleep(100);		// 0.1초의 간격으로 게임 진행
 			} catch(Exception e) {}
 			
-			if(clock> 90)
+			if(clock> 900)
 				Stop();				// 45텀을 넘기면 게임 종료
 		}
 		System.out.println(" * TIME OUT * ");
@@ -178,8 +180,43 @@ class JField extends JPanel {
 		
 		x1 = w/2; y1 = h/2;
 		x0 = -x1; y0 = -y1;
+		
+		addKeyListener(new OMyKeyListener(match));
+		this.setFocusable(true);
 	}
-	
+	class OMyKeyListener extends KeyAdapter{
+		Soccer match;
+		int speed = 4;
+		OMyKeyListener(Soccer m){
+			match = m;
+		}
+		public void keyPressed(KeyEvent e) {
+			//System.out.println("somethis hit!");
+			switch(e.getExtendedKeyCode()) {
+				case KeyEvent.VK_RIGHT:
+					//System.out.println("q run!!");
+					match.q.runtoward(2*speed, 0);
+					break;
+				case KeyEvent.VK_LEFT:
+					//System.out.println("q run!!");
+					match.q.runtoward(-2*speed, 0);
+					break;
+				case KeyEvent.VK_UP:
+					System.out.println("q run!!");
+					match.q.runtoward(0, -2*speed);
+					break;
+				case KeyEvent.VK_DOWN:
+					//System.out.println("q run!!");
+					match.q.runtoward(0, 2*speed);
+					break;
+				case KeyEvent.VK_ESCAPE:
+					break;
+				default:
+					//System.out.println("some keyborad hitted!");
+					break;
+			}
+		}
+	}
 	int GetLeft() 
 	{
 		return x0;
@@ -303,8 +340,8 @@ class Player {
 			ky = -2 * ky;
 		}
 		else if(b.GetX() > 0 && this.team.equals("Q")) {
-			kx = -kx;
-			ky = -ky;
+			//kx = - 2*kx;
+			//ky = - 2*ky;
 		}
 		b.Fly(kx, ky);		// 공에게 가속도 부여
 		speed = speed/2;	// 차고 나면 선수 힘들어서 속도 준다
@@ -352,5 +389,8 @@ class Player {
 	}
 	public void draw(Graphics g) {
 		g.drawRect(JField.getCx() + x -5, JField.getCy() + y-20, 10, 20);
+	}
+	void runtoward(int dx, int dy) {
+		x += dx; y += dy;
 	}
 }
